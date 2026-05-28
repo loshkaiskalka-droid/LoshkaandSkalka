@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ложка & Скалка — Домашняя кухня и выпечка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fbf9f5;
+            --card-bg: #ffffff;
+            --primary: #8da399; /* Шалфейный зеленый */
+            --primary-dark: #6b8277;
+            --accent: #dcae82; /* Теплый медовый из логотипа */
+            --text: #3a3a3a;
+            --text-light: #707070;
+            --title-font: 'Comfortaa', cursive;
+            --body-font: 'Lora', serif;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow: 0 10px 30px rgba(141, 163, 153, 0.1);
+            --logo-bg: #f4f0e6; /* Тот самый крафтовый фон из логотипа 1000242764.jpg */
+        }
+
+        body {
+            font-family: var(--body-font);
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Шапка сайта */
+        header {
+            background-color: var(--logo-bg); /* Задний фон под цвет логотипа */
+            padding: 8px 4%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 65px; /* Логотип стал чутка побольше (был 50px) */
+            height: 65px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-family: var(--title-font);
+            font-size: 1.15em;
+            color: var(--primary-dark);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            font-family: var(--title-font);
+            font-size: 0.85em;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Уменьшенная кнопка корзины */
+        .cart-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 12px; /* Уменьшили внутренние отступы */
+            border-radius: 12px; /* Чуть компактнее скругление */
+            text-decoration: none;
+            font-family: var(--title-font);
+            font-weight: bold;
+            font-size: 0.8em; /* Уменьшили размер текста */
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(141, 163, 153, 0.2);
+            white-space: nowrap;
+        }
+
+        .cart-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Главный баннер */
+        .hero {
+            padding: 40px 6%;
+            text-align: center;
+            background: radial-gradient(circle at top, #f3ede2 0%, var(--bg-color) 70%);
+        }
+
+        .hero h1 {
+            font-family: var(--title-font);
+            font-size: 2.2em;
+            color: var(--text);
+            margin: 0 0 12px 0;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1em;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Заголовки меню */
+        .section-title {
+            font-family: var(--title-font);
+            font-size: 1.5em;
+            padding: 0 6%;
+            margin-top: 40px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 2px;
+            background: linear-gradient(to right, #e2dacd, transparent);
+        }
+
+        /* Сетка товаров */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+            padding: 20px 6% 40px 6%;
+        }
+
+        /* Карточка товара */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(141, 163, 153, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-family: var(--title-font);
+            font-size: 0.75em;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-family: var(--title-font);
+            font-size: 1.2em;
+            margin: 0 0 8px 0;
+        }
+
+        .card-desc {
+            font-size: 0.9em;
+            color: var(--text-light);
+            margin: 0 0 15px 0;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            font-size: 0.8em;
+            color: #a0a0a0;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .price {
+            font-family: var(--title-font);
+            font-size: 1.25em;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .counter-group {
+            display: flex;
+            align-items: center;
+            background: #f0ede7;
+            border-radius: 30px;
+            padding: 3px;
+            gap: 8px;
+        }
+
+        .counter-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--text);
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-val {
+            font-family: var(--title-font);
+            font-weight: bold;
+            min-width: 18px;
+            text-align: center;
+            font-size: 0.95em;
+        }
+
+        .add-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: var(--title-font);
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .add-btn.added {
+            background-color: var(--accent);
+        }
+
+        /* Адаптация под планшеты и ПК */
+        @media (min-width: 768px) {
+            header { padding: 12px 8%; }
+            .logo-img { width: 85px; height: 85px; } /* На ПК логотип тоже стал больше */
+            .logo-text { font-size: 1.6em; }
+            .nav-links a { font-size: 0.95em; }
+            .cart-btn { font-size: 0.85em; padding: 10px 18px; } /* Пропорционально компактнее на ПК */
+            .hero { padding: 80px 8% 60px 8%; }
+            .hero h1 { font-size: 3.5em; }
+            .hero p { font-size: 1.2em; }
+            .section-title { font-size: 2em; padding: 0 8%; }
+            .grid { gap: 40px; padding: 30px 8% 60px 8%; }
+            .card-img { height: 240px; }
+            .card-title { font-size: 1.35em; }
+            .counter-btn { width: 32px; height: 32px; font-size: 1em; }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-container">
+            <img src="logo.png" alt="Ложка & Скалка Лого" class="logo-img">
+            <span class="logo-text">Ложка & Скалка</span>
+        </a>
+        <div class="nav-links">
+            <a href="#special">Блюдо дня</a>
+            <a href="#regular">Основное меню</a>
+        </div>
+        <a href="cart.html" class="cart-btn">
+            <span>🛒 Корзина</span>
+            <span id="global-cart-count">0</span>
+        </a>
+    </header>
+
+    <section class="hero">
+        <h1>Домашняя кухня и выпечка</h1>
+        <p>Готовим с любовью и душой. Каждый день недели вас ждет уникальное фирменное блюдо от нашего шефа!</p>
+    </section>
+
+    <h2 class="section-title" id="special-title">Сегодня в меню</h2>
+    <div class="grid" id="special-menu-grid"></div>
+
+    <h2 class="section-title" id="regular">Постоянное меню</h2>
+    <div class="grid" id="regular-menu-grid"></div>
+
+    <script>
+        const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+        const currentDayIndex = new Date().getDay();
+        const currentDayName = daysOfWeek[currentDayIndex];
+
+        // Заглушка базы данных товаров
+        const productsMock = [
+            { id: 1, title: "Уха по-царски", description: "Наваристая уха из трех видов рыб с добавлением секретных домашних специй.", weight: "450 г", price: 540, day: "Четверг", image: "https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=600&auto=format&fit=crop" },
+            { id: 2, title: "Пышные Блины с маслицем", description: "Толстые домашние блинчики по старинному рецепту. Подаются со свежей сметаной.", weight: "250 г", price: 290, day: "Воскресенье", image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=600&auto=format&fit=crop" },
+            { id: 3, title: "Котлетки с пюре", description: "Две сочные домашние котлетки из фермерского фарша с нежнейшим картофельным пюре.", weight: "400 г", price: 420, day: "Все дни", image: "https://images.unsplash.com/photo-1589112108781-678968846c48?q=80&w=600&auto=format&fit=crop" },
+            { id: 4, title: "Борщ с пампушками", description: "Густой наваристый борщ на говяжьей косточке со свежим салом и чесночными пампушками.", weight: "500 г", price: 480, day: "Все дни", image: "https://images.unsplash.com/photo-1547592165-e1d17fed6005?q=80&w=600&auto=format&fit=crop" }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+        function initData() {
+            document.getElementById('special-title').innerText = `Сегодня в меню (${currentDayName})`;
+            
+            const specialGrid = document.getElementById('special-menu-grid');
+            const regularGrid = document.getElementById('regular-menu-grid');
+            
+            specialGrid.innerHTML = '';
+            regularGrid.innerHTML = '';
+
+            let hasSpecial = false;
+
+            productsMock.forEach(prod => {
+                const quantity = cart[prod.id] ? cart[prod.id].quantity : 1;
+                const isAdded = cart[prod.id] !== undefined;
+
+                const cardHTML = `
+                    <div class="card" id="product-${prod.id}">
+                        ${prod.day !== 'Все дни' ? `<div class="card-tag">${prod.day}</div>` : ''}
+                        <img src="${prod.image}" class="card-img" alt="${prod.title}">
+                        <div class="card-content">
+                            <div>
+                                <h3 class="card-title">${prod.title}</h3>
+                                <p class="card-desc">${prod.description}</p>
+                                <div class="card-meta">Вес: ${prod.weight}</div>
+                            </div>
+                            <div class="card-actions">
+                                <span class="price">${prod.price} ₽</span>
+                                <div class="counter-group">
+                                    <button class="counter-btn" onclick="changeQty(${prod.id}, -1)">-</button>
+                                    <span class="quantity-val" id="qty-${prod.id}">${quantity}</span>
+                                    <button class="counter-btn" onclick="changeQty(${prod.id}, 1)">+</button>
+                                    <button class="add-btn ${isAdded ? 'added' : ''}" id="btn-${prod.id}" onclick="handleCartClick(${prod.id})">
+                                        ${isAdded ? 'Добавлено' : 'Добавить'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (prod.day === currentDayName) {
+                    specialGrid.innerHTML += cardHTML;
+                    hasSpecial = true;
+                } else if (prod.day === "Все дни") {
+                    regularGrid.innerHTML += cardHTML;
+                }
+            });
+
+            if(!hasSpecial) {
+                specialGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-light); padding: 10px;">На сегодня особых блюд дня нет, но основное меню всегда доступно!</p>`;
+            }
+            updateCartHeader();
+        }
+
+        function changeQty(id, delta) {
+            const qtyElement = document.getElementById(`qty-${id}`);
+            let currentQty = parseInt(qtyElement.innerText);
+            currentQty += delta;
+            if (currentQty < 1) currentQty = 1;
+            qtyElement.innerText = currentQty;
+
+            if (cart[id]) {
+                cart[id].quantity = currentQty;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartHeader();
+            }
+        }
+
+        function handleCartClick(id) {
+            const btn = document.getElementById(`btn-${id}`);
+            const qty = parseInt(document.getElementById(`qty-${id}`).innerText);
+            const product = productsMock.find(p => p.id === id);
+
+            if (cart[id]) {
+                delete cart[id];
+                btn.innerText = "Добавить";
+                btn.classList.remove('added');
+            } else {
+                cart[id] = {
+                    id: product.id,
+                    title: product.title,
+                    price: product.price,
+                    weight: product.weight,
+                    day: product.day,
+                    image: product.image,
+                    quantity: qty
+                };
+                btn.innerText = "Добавлено";
+                btn.classList.add('added');
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartHeader();
+        }
+
+        function updateCartHeader() {
+            const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('global-cart-count').innerText = totalItems;
+        }
+
+        window.onload = initData;
+    </script>
+</body>
+</html>
+
