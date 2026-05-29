@@ -128,7 +128,7 @@ with tab2:
             new_price = st.number_input("Цена (₽) *", min_value=0, step=10, value=300)
             new_weight = st.text_input("Вес (например, '250 г') *", value="250 г")
             
-            # ИЗМЕНЕНО: Замена selectbox на multiselect для выбора нескольких дней недели
+            # Выбор дней чекбоксами (мультивыбор)
             new_days = st.multiselect("Дни доступности блюда *", options=days_list, default=["Все дни"])
             
             new_cats = st.multiselect("Категории блюда (Выбор нескольких) *", options=categories_list)
@@ -152,7 +152,6 @@ with tab2:
                         cats_string = ", ".join(new_cats)
                         full_description_field = f"{new_desc}\n\n[CATS:]: {cats_string}"
                         
-                        # Если выбрано "Все дни" вместе с другими днями, оставляем только "Все дни" для чистоты структуры
                         if "Все дни" in new_days and len(new_days) > 1:
                             days_string = "Все дни"
                         else:
@@ -198,13 +197,12 @@ with tab2:
                 edit_price = st.number_input("Изменить цену (₽)", min_value=0, value=int(chosen_prod["price"]))
                 edit_weight = st.text_input("Изменить вес", value=chosen_prod["weight"])
                 
-                # Парсим уже сохраненные дни из базы данных для отображения по умолчанию
+                # Парсим сохраненные дни из базы данных
                 saved_days = [d.strip() for d in (chosen_prod.get("day") or "Все дни").split(",")]
                 valid_saved_days = [d for d in saved_days if d in days_list]
                 if not valid_saved_days:
                     valid_saved_days = ["Все дни"]
                 
-                # ИЗМЕНЕНО: Замена selectbox на multiselect в редакторе блюда
                 edit_days = st.multiselect("Изменить дни доступности", options=days_list, default=valid_saved_days)
                 edit_cats = st.multiselect("Изменить категории", options=categories_list, default=[c for c in extracted_cats if c in categories_list])
                 
@@ -219,6 +217,7 @@ with tab2:
                         else:
                             updated_days_str = ", ".join(edit_days)
                         
+                        # ОШИБКА ИСПРАВЛЕНА: Переменная 'day' теперь строго получает 'updated_days_str'
                         supabase.table("products").update({
                             "title": edit_title,
                             "description": updated_full_desc,
