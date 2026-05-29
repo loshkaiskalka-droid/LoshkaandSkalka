@@ -204,8 +204,7 @@
         <a href="index.html" class="back-link">← Вернуться к меню</a>
     </header>
 
-    <div class="cart-layout" id="cart-layout">
-        </div>
+    <div class="cart-layout" id="cart-layout"></div>
 </div>
 
 <script>
@@ -284,7 +283,6 @@
         renderCart();
     }
 
-    // ОТПРАВКА ЗАКАЗА НА НАШ PYTHON-БЭКЕНД
     async function handleOrderSubmit(event) {
         event.preventDefault();
 
@@ -297,7 +295,7 @@
             phone: document.getElementById('userphone').value,
             address: document.getElementById('useraddress').value,
             cart_items: Object.values(cart).map(item => ({
-                id: int(item.id), // Приводим к числу
+                id: int(item.id),
                 title: item.title,
                 price: int(item.price),
                 quantity: int(item.quantity)
@@ -305,8 +303,8 @@
         };
 
         try {
-            // При деплое заменим локальный адрес на адрес реального сервера
-            const response = await fetch('http://127.0.0.1:8000/api/order', {
+            // СВЯЗЬ С ТВОИМ СЕРВЕРОМ RENDER
+            const response = await fetch('https://loshkaandskalka.onrender.com/api/order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -317,22 +315,21 @@
             const result = await response.json();
 
             if (response.ok && result.success) {
-                alert('🎉 Заказ успешно принят «Ложка & Скалка»! Менеджер скоро свяжется с вами.');
-                localStorage.removeItem('cart'); // Очищаем корзину
-                window.location.href = 'index.html'; // Возвращаем на главную
+                alert('🎉 Заказ успешно принят «Ложка & Скалка»! Чат-бот уже прислал нам уведомление.');
+                localStorage.removeItem('cart');
+                window.location.href = 'index.html';
             } else {
-                throw new Error(result.detail || 'Неизвестная ошибка на сервере');
+                throw new Error(result.detail || 'Ошибка сервера');
             }
 
         } catch (error) {
             console.error('Ошибка отправки заказа:', error);
-            alert('🛑 Ошибка при оформлении: сервер бэкенда недоступен. Пожалуйста, убедитесь, что Python запущен.');
+            alert('🛑 Ошибка: не удалось связаться с сервером на Render. Проверьте логи сервиса.');
             btn.innerText = "Оформить заказ на дом";
             btn.disabled = false;
         }
     }
 
-    // Для безопасного парсинга чисел
     function int(value) {
         return parseInt(value) || 0;
     }
