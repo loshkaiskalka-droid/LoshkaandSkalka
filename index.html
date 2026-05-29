@@ -140,6 +140,11 @@
             z-index: 2;
         }
 
+        /* Кликабельные зоны карточки делаем с указателем курсора */
+        .card-click-zone {
+            cursor: pointer;
+        }
+
         .card-img {
             width: 100%;
             height: 200px;
@@ -239,6 +244,97 @@
         .add-btn.added {
             background: var(--text-light);
         }
+
+        /* КРАСИВОЕ МОДАЛЬНОЕ ОКНО ДЛЯ СМАРТФОНОВ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(45, 38, 33, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 15px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-window {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-window {
+            transform: translateY(0);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid var(--border);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .modal-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-title {
+            font-family: var(--title-font);
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .modal-full-desc {
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            white-space: pre-line; /* Сохраняет абзацы текста из базы данных */
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
     </style>
 </head>
 <body>
@@ -261,6 +357,23 @@
     <div class="bento-grid" id="regular-menu-grid"></div>
 </div>
 
+<div class="modal-overlay" id="product-modal" onclick="closeModal(event)">
+    <div class="modal-window">
+        <button class="modal-close-btn" onclick="toggleModal(false)">✕</button>
+        <img src="" class="modal-img" id="modal-image" alt="">
+        <div class="modal-body">
+            <h3 class="modal-title" id="modal-title">Название блюда</h3>
+            <div class="card-meta" id="modal-weight">Вес: 0г</div>
+            <p class="modal-full-desc" id="modal-description">Полное описание содержимого еды...</p>
+            
+            <div class="modal-footer">
+                <span class="price" id="modal-price">0 ₽</span>
+                <span style="font-size: 13px; color: var(--text-light);">Нажмите «Добавить» на карточке для заказа</span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
     const currentDayIndex = new Date().getDay();
@@ -271,7 +384,6 @@
 
     async function loadMenuFromServer() {
         try {
-            // СВЯЗЬ С ТВОИМ СЕРВЕРОМ RENDER
             const response = await fetch('https://loshkaandskalka.onrender.com/api/products');
             if (!response.ok) throw new Error('Ошибка сети');
             
@@ -304,13 +416,17 @@
             const cardHTML = `
                 <div class="card" id="product-${prod.id}">
                     ${prod.day !== 'Все дни' ? `<div class="card-tag">${prod.day}</div>` : ''}
-                    <img src="${prod.image}" class="card-img" alt="${prod.title}">
-                    <div class="card-content">
-                        <div>
+                    
+                    <div class="card-click-zone" onclick="openProductDetails(${prod.id})">
+                        <img src="${prod.image}" class="card-img" alt="${prod.title}">
+                        <div style="padding: 15px 15px 0 15px;">
                             <h3 class="card-title">${prod.title}</h3>
                             <p class="card-desc">${prod.description}</p>
                             <div class="card-meta">Вес: ${prod.weight}</div>
                         </div>
+                    </div>
+
+                    <div class="card-content" style="padding-top: 0;">
                         <div class="card-actions">
                             <span class="price">${prod.price} ₽</span>
                             <div class="counter-group">
@@ -335,9 +451,42 @@
         });
 
         if(!hasSpecial) {
-            specialGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-light); padding: 10px;">На сегодня особых блюд дня нет, но основное домашнее меню всегда открыто!</p>`;
+            specialGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-light); padding: 10px;">На сегодня особых блюд дня нет, но основное меню всегда открыто!</p>`;
         }
         updateCartHeader();
+    }
+
+    // ЛОГИКА ОКНА ПОДРОБНОСТЕЙ
+    function openProductDetails(id) {
+        const product = productsMock.find(p => p.id === id);
+        if (!product) return;
+
+        // Наполняем модальное окно данными выбранного блюда
+        document.getElementById('modal-image').src = product.image;
+        document.getElementById('modal-image').alt = product.title;
+        document.getElementById('modal-title').innerText = product.title;
+        document.getElementById('modal-weight').innerText = `Вес: ${product.weight}`;
+        document.getElementById('modal-description').innerText = product.description;
+        document.getElementById('modal-price').innerText = `${product.price} ₽`;
+
+        // Открываем окно
+        toggleModal(true);
+    }
+
+    function toggleModal(isOpen) {
+        const modal = document.getElementById('product-modal');
+        if (isOpen) {
+            modal.classList.add('active');
+        } else {
+            modal.classList.remove('active');
+        }
+    }
+
+    // Закрытие при клике на темную область вокруг окна
+    function closeModal(event) {
+        if (event.target.id === 'product-modal') {
+            toggleModal(false);
+        }
     }
 
     function changeQty(id, delta) {
