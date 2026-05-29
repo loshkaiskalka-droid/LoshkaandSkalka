@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import time
 from supabase import create_client, Client
 
 # Настройка страницы под мобильные телефоны
@@ -141,12 +142,17 @@ with tab2:
                     st.error("Пожалуйста, заполните обязательные поля, выберите дни и добавьте фото!")
                 else:
                     try:
-                        file_extension = uploaded_file.name.split(".")[-1]
-                        clean_title = "".join([c for c in new_title if c.isalnum()]).lower()
-                        storage_path = f"menu/{clean_title}_{int(new_price)}.{file_extension}"
+                        # Абсолютно безопасная генерация имени файла на латинице во избежание InvalidKey
+                        file_extension = uploaded_file.name.split(".")[-1].lower()
+                        timestamp = int(time.time())
+                        storage_path = f"menu/dish_{timestamp}.{file_extension}"
                         
                         file_data = uploaded_file.read()
-                        supabase.storage.from_(BUCKET_NAME).upload(storage_path, file_data, {"content-type": f"image/{file_extension}"})
+                        supabase.storage.from_(BUCKET_NAME).upload(
+                            storage_path, 
+                            file_data, 
+                            {"content-type": f"image/{file_extension}"}
+                        )
                         img_url = supabase.storage.from_(BUCKET_NAME).get_public_url(storage_path)
                         
                         cats_string = ", ".join(new_cats)
@@ -217,7 +223,6 @@ with tab2:
                         else:
                             updated_days_str = ", ".join(edit_days)
                         
-                        # ОШИБКА ИСПРАВЛЕНА: Переменная 'day' теперь строго получает 'updated_days_str'
                         supabase.table("products").update({
                             "title": edit_title,
                             "description": updated_full_desc,
