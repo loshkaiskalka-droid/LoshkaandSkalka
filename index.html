@@ -39,7 +39,6 @@
             margin: 0 auto;
         }
 
-        /* НАВИГАЦИЯ */
         header {
             display: flex;
             justify-content: space-between;
@@ -95,7 +94,6 @@
             font-size: 14px;
         }
 
-        /* БЕНТО-СЕТКА ДЛЯ МЕНЮ */
         .section-title {
             font-family: var(--title-font);
             font-size: 24px;
@@ -112,7 +110,6 @@
             margin-bottom: 50px;
         }
 
-        /* КАРТОЧКА ТОВАРА */
         .card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -258,46 +255,37 @@
     </header>
 
     <h2 class="section-title" id="special-title">Сегодня в меню</h2>
-    <div class="bento-grid" id="special-menu-grid">
-        </div>
+    <div class="bento-grid" id="special-menu-grid"></div>
 
     <h2 class="section-title">Основное домашнее меню</h2>
-    <div class="bento-grid" id="regular-menu-grid">
-        </div>
+    <div class="bento-grid" id="regular-menu-grid"></div>
 </div>
 
 <script>
-    // Логика определения дня недели
     const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
     const currentDayIndex = new Date().getDay();
     const currentDayName = daysOfWeek[currentDayIndex];
 
-    // Массив товаров, который мы наполним данными из базы данных Supabase через FastAPI
     let productsMock = [];
     let cart = JSON.parse(localStorage.getItem('cart')) || {};
 
-    // ЗАГРУЗКА МЕНЮ С СЕРВЕРА
     async function loadMenuFromServer() {
         try {
-            // Запрос идет на наш запущенный локально бэкенд main.py
-            // При переносе на реальный хостинг поменяем этот URL на постоянный
-            const response = await fetch('http://127.0.0.1:8000/api/products');
+            // СВЯЗЬ С ТВОИМ СЕРВЕРОМ RENDER
+            const response = await fetch('https://loshkaandskalka.onrender.com/api/products');
             if (!response.ok) throw new Error('Ошибка сети');
             
             productsMock = await response.json();
-            
-            // Если данные успешно прилетели, строим карточки на экране
             initData();
         } catch (error) {
             console.error('Не удалось загрузить меню:', error);
             document.getElementById('special-menu-grid').innerHTML = 
                 `<p style="grid-column: 1/-1; text-align:center; color: var(--error); padding: 10px; font-weight: bold;">
-                    🛑 Не удалось загрузить меню. Убедитесь, что Python-сервер запущен и работает.
+                    🛑 Не удалось загрузить меню. Проверьте статус бэкенда на Render.
                 </p>`;
         }
     }
 
-    // ОТРИСОВКА КАРТОЧЕК НА СТРАНИЦЕ
     function initData() {
         document.getElementById('special-title').innerText = `Особое блюдо дня (${currentDayName})`;
         
@@ -310,7 +298,6 @@
         let hasSpecial = false;
 
         productsMock.forEach(prod => {
-            // Если товар уже лежит в корзине, берем его количество, иначе ставим 1
             const quantity = cart[prod.id] ? cart[prod.id].quantity : 1;
             const isAdded = cart[prod.id] !== undefined;
 
@@ -339,7 +326,6 @@
                 </div>
             `;
 
-            // Сортируем блюда: под текущий день недели или в основное меню
             if (prod.day === currentDayName) {
                 specialGrid.innerHTML += cardHTML;
                 hasSpecial = true;
@@ -348,14 +334,12 @@
             }
         });
 
-        // Если на сегодняшний день нет специального блюда
         if(!hasSpecial) {
             specialGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-light); padding: 10px;">На сегодня особых блюд дня нет, но основное домашнее меню всегда открыто!</p>`;
         }
         updateCartHeader();
     }
 
-    // ИЗМЕНЕНИЕ КОЛИЧЕСТВА БЛЮД КНОПКАМИ +/-
     function changeQty(id, delta) {
         const qtyElement = document.getElementById(`qty-${id}`);
         let currentQty = parseInt(qtyElement.innerText);
@@ -363,7 +347,6 @@
         if (currentQty < 1) currentQty = 1;
         qtyElement.innerText = currentQty;
 
-        // Если товар уже добавлен в корзину, обновляем количество и в памяти телефона
         if (cart[id]) {
             cart[id].quantity = currentQty;
             localStorage.setItem('cart', JSON.stringify(cart));
@@ -371,19 +354,16 @@
         }
     }
 
-    // НАЖАТИЕ НА КНОПКУ ДОБАВИТЬ/УДАЛИТЬ С КОРЗИНЫ
     function handleCartClick(id) {
         const btn = document.getElementById(`btn-${id}`);
         const qty = parseInt(document.getElementById(`qty-${id}`).innerText);
         const product = productsMock.find(p => p.id === id);
 
         if (cart[id]) {
-            // Если уже был в корзине — удаляем
             delete cart[id];
             btn.innerText = "Добавить";
             btn.classList.remove('added');
         } else {
-            // Если не было — добавляем объект блюда со всеми параметрами
             cart[id] = {
                 id: product.id,
                 title: product.title,
@@ -400,13 +380,11 @@
         updateCartHeader();
     }
 
-    // ОБНОВЛЕНИЕ ЦИФРЫ НА КНОПКЕ КОРЗИНЫ В ШАПКЕ
     function updateCartHeader() {
         const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
         document.getElementById('global-cart-count').innerText = totalItems;
     }
 
-    // Запускаем автоматический стук к серверу при загрузке страницы сайтом
     window.onload = loadMenuFromServer;
 </script>
 </body>
