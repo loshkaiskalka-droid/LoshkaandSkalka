@@ -21,7 +21,6 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Включаем плавную прокрутку по странице */
         html { scroll-behavior: smooth; }
 
         body {
@@ -76,7 +75,6 @@
         .cart-badge-btn:hover { background: var(--primary-hover); }
         .cart-count { background: white; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 14px; }
 
-        /* Фиксируем панель навигации сверху при скролле, чтобы всегда была под рукой */
         .categories-nav-wrapper {
             position: sticky;
             top: 0;
@@ -122,7 +120,6 @@
             padding-left: 12px;
         }
 
-        /* Отступ сверху для разделов, чтобы заголовок не прятался под липкую шапку при переходе */
         .category-section { margin-bottom: 35px; scroll-margin-top: 70px; }
         
         .category-title {
@@ -195,7 +192,6 @@
         .add-btn { background: var(--primary); color: white; border: none; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         .add-btn.added { background: var(--text-light); }
 
-        /* МОДАЛЬНОЕ ОКНО */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(45, 38, 33, 0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 15px; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-window { background: var(--card-bg); width: 100%; max-width: 500px; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 15px 30px rgba(0,0,0,0.15); position: relative; transform: translateY(20px); transition: transform 0.3s ease; }
@@ -222,8 +218,7 @@
     </header>
 
     <div class="categories-nav-wrapper">
-        <div class="categories-container" id="categories-bar">
-            </div>
+        <div class="categories-container" id="categories-bar"></div>
     </div>
 
     <div class="main-menu-block">
@@ -265,7 +260,7 @@
             productsMock = await response.json();
             
             try {
-                const catRes = await fetch('https://aetrutsqekrydgzytgbd.supabase.co/storage/v1/object/public/dish-images/categories.txt');
+                const catRes = await fetch('https://aetrutsqekrydgzytgbd.supabase.co/storage/v1/object/public/food-images/categories.txt');
                 if (catRes.ok) {
                     const txt = await catRes.text();
                     activeCategories = txt.split(',').map(c => c.trim()).filter(c => c.length > 0);
@@ -282,13 +277,11 @@
         }
     }
 
-    // Рендерим кнопки быстрого перехода (ссылки-якоря)
     function renderAnchorButtons(categoriesWithProducts) {
         const bar = document.getElementById('categories-bar');
-        bar.innerHTML = ''; // Очищаем старые кнопки
+        bar.innerHTML = '';
         
         categoriesWithProducts.forEach(cat => {
-            // Генерируем безопасный ID для ссылки (без пробелов)
             const safeId = 'sec-' + cat.replace(/\s+/g, '-');
             bar.innerHTML += `<a href="#${safeId}" class="category-btn">📍 ${cat}</a>`;
         });
@@ -298,7 +291,11 @@
         const container = document.getElementById('dynamic-menu-sections');
         container.innerHTML = '';
 
-        const todaysProducts = productsMock.filter(prod => prod.day === currentDayName || prod.day === "Все дни");
+        // ИЗМЕНЕНО: Проверяем вхождение текущего дня с помощью .includes()
+        const todaysProducts = productsMock.filter(prod => {
+            const dayField = prod.day || "Все дни";
+            return dayField.includes(currentDayName) || dayField.includes("Все дни");
+        });
 
         if (todaysProducts.length === 0) {
             container.innerHTML = `<p style="text-align:center; color: var(--text-light); padding: 30px;">На сегодня меню пустует.</p>`;
@@ -329,7 +326,7 @@
 
                 categoryCardsHTML += `
                     <div class="card" id="product-${prod.id}-${categoryName}">
-                        ${prod.day !== 'Все дни' ? `<div class="card-tag">Только в ${prod.day}</div>` : ''}
+                        ${prod.day !== 'Все дни' ? `<div class="card-tag">Дни: ${prod.day}</div>` : ''}
                         <div class="card-click-zone" onclick="openProductDetails(${prod.id}, \`${pureDesc.replace(/`/g, '\\`').replace(/\n/g, '\\n')}\`)">
                             <img src="${prod.image}" class="card-img" alt="${prod.title}">
                             <div style="padding: 15px 15px 0 15px;">
@@ -368,7 +365,6 @@
             }
         });
 
-        // Строим панель навигации только из тех категорий, в которых реально есть блюда на сегодня
         renderAnchorButtons(renderedCategories);
         updateCartHeader();
     }
