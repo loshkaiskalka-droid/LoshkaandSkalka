@@ -2,182 +2,174 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Оформление заказа — Ложка & Скалка</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Lora:wght@400;600;700&swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина — Ложка & Скалка</title>
     <style>
         :root {
-            --bg-color: #fbf9f5;
+            --bg: #faf6f0;
+            --text: #2d2621;
+            --text-light: #70655c;
+            --primary: #c84b31;
+            --primary-hover: #a33822;
             --card-bg: #ffffff;
-            --primary: #8da399;
-            --primary-dark: #6b8277;
-            --accent: #dcae82;
-            --text: #3a3a3a;
-            --text-light: #707070;
-            --error: #d9534f;
-            --title-font: 'Comfortaa', cursive;
-            --body-font: 'Lora', serif;
-            --radius-md: 16px;
-            --shadow: 0 10px 30px rgba(141, 163, 153, 0.08);
-            --logo-bg: #f4f0e6; /* Тот самый крафтовый фон из логотипа 1000242764.jpg */
+            --border: #eedecf;
+            --title-font: 'Georgia', serif;
+            --main-font: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: var(--body-font);
-            background-color: var(--bg-color);
+            background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
+            font-family: var(--main-font);
+            padding: 20px 10px;
+            min-height: 100vh;
         }
 
-        /* Шапка корзины */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         header {
-            background-color: var(--logo-bg); /* Задний фон под цвет логотипа */
-            padding: 8px 4%;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed var(--border);
+        }
+
+        h1 {
+            font-family: var(--title-font);
+            font-size: 24px;
+            color: var(--primary);
         }
 
         .back-link {
+            color: var(--text-light);
             text-decoration: none;
-            color: var(--primary-dark);
-            font-family: var(--title-font);
-            font-weight: bold;
+            font-size: 15px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 0.9em;
+            gap: 5px;
         }
 
-        .back-logo-img {
-            width: 60px; /* Сделали логотип побольше */
-            height: 60px;
-            object-fit: contain;
-        }
-
-        /* Сетка макета */
-        .container {
-            max-width: 1100px;
-            margin: 20px auto;
-            padding: 0 4%;
+        .cart-layout {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 25px;
         }
 
-        h2 { font-family: var(--title-font); margin-top: 0; font-size: 1.3em; }
-
-        .panel {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            box-sizing: border-box;
+        .cart-items {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid var(--border);
         }
 
-        /* Карточка в корзине */
         .cart-item {
             display: flex;
-            gap: 12px;
-            padding: 15px 0;
-            border-bottom: 1px solid #f0ede7;
             align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .cart-item:last-child { border-bottom: none; }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
 
         .item-img {
-            width: 65px;
-            height: 65px;
+            width: 70px;
+            height: 70px;
             object-fit: cover;
-            border-radius: 12px;
+            border-radius: 10px;
         }
 
-        .item-details { flex-grow: 1; min-width: 0; }
-
-        .item-title { 
-            font-family: var(--title-font); 
-            font-weight: 600; 
-            margin: 0 0 3px 0; 
-            font-size: 1em; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            white-space: nowrap; 
+        .item-details {
+            flex-grow: 1;
         }
-        
-        .item-meta { font-size: 0.8em; color: var(--text-light); }
 
-        .availability-error {
-            color: var(--error);
+        .item-title {
             font-family: var(--title-font);
-            font-size: 0.75em;
-            margin-top: 4px;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .item-meta {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .item-price-block {
+            text-align: right;
             font-weight: bold;
         }
 
-        /* Контроллеры количества */
-        .item-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-
-        .counter {
-            display: flex;
-            align-items: center;
-            background: #f5f2eb;
-            border-radius: 20px;
-            padding: 2px;
-        }
-
-        .btn-c {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            background: white;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1em;
-        }
-
-        .qty-lbl { min-width: 20px; text-align: center; font-family: var(--title-font); font-size: 0.85em; }
-
-        .delete-btn {
+        .item-del-btn {
             background: none;
             border: none;
-            color: #c0c0c0;
+            color: #d9534f;
             cursor: pointer;
-            font-size: 1.1em;
-            padding: 4px;
+            font-size: 18px;
+            padding: 5px;
         }
 
-        /* Форма заказа */
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-family: var(--title-font); font-size: 0.85em; }
-        .form-group input, .form-group textarea {
+        .order-form-block {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .form-title {
+            font-family: var(--title-font);
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #e2dacd;
-            border-radius: 10px;
-            font-family: var(--body-font);
-            box-sizing: border-box;
-            background-color: #faf9f6;
-            font-size: 16px; /* Защита от автозума на iOS */
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--main-font);
+            font-size: 15px;
         }
 
-        .summary-line {
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .total-row {
             display: flex;
             justify-content: space-between;
-            font-size: 1.1em;
-            font-family: var(--title-font);
-            margin: 20px 0;
+            font-size: 18px;
             font-weight: bold;
+            margin: 20px 0;
+            padding-top: 15px;
+            border-top: 2px solid var(--border);
         }
 
         .submit-btn {
@@ -185,222 +177,167 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-family: var(--title-font);
-            font-size: 1em;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            box-sizing: border-box;
+            transition: background 0.2s;
         }
 
-        /* Модалка уведомления */
-        .modal-overlay {
-            position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.6);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1000; visibility: hidden; opacity: 0;
-            transition: all 0.3s ease;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .modal-overlay.active { visibility: visible; opacity: 1; }
-        .modal {
-            background: white; padding: 30px 20px; border-radius: var(--radius-md);
-            text-align: center; max-width: 400px; width: 100%; box-shadow: var(--shadow);
-        }
-        .modal h3 { font-family: var(--title-font); color: var(--primary-dark); margin-top:0; }
-        .modal button {
-            background: var(--accent); color:white; border:none; padding: 12px 30px;
-            border-radius: 20px; font-family: var(--title-font); cursor:pointer; font-weight: bold;
+        .submit-btn:hover {
+            background: var(--primary-hover);
         }
 
-        /* Медиа-запросы для ПК/Планшетов */
-        @media (min-width: 768px) {
-            header { padding: 12px 8%; }
-            .back-link { font-size: 1.05em; }
-            .back-logo-img { width: 80px; height: 80px; } /* Увеличено для баланса */
-            .container { grid-template-columns: 1.6fr 1fr; gap: 40px; margin: 40px auto; padding: 0 20px; }
-            .panel { padding: 30px; }
-            h2 { font-size: 1.5em; }
-            .cart-item { gap: 20px; }
-            .item-img { width: 80px; height: 80px; }
-            .item-title { font-size: 1.2em; }
-            .item-controls { flex-direction: row; align-items: center; gap: 15px; }
-            .btn-c { width: 28px; height: 28px; }
-            .qty-lbl { font-size: 0.9em; min-width: 25px; }
+        .empty-msg {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
         }
     </style>
 </head>
 <body>
 
+<div class="container">
     <header>
-        <a href="index.html" class="back-link">
-            <img src="logo.png" alt="Ложка & Скалка" class="back-logo-img">
-            <span>← На главную «Ложка & Скалка»</span>
-        </a>
+        <h1>Ваш заказ</h1>
+        <a href="index.html" class="back-link">← Вернуться к меню</a>
     </header>
 
-    <div class="container">
-        <div class="panel">
-            <h2>Выбранные блюда</h2>
-            <div id="cart-list"></div>
+    <div class="cart-layout" id="cart-layout">
         </div>
+</div>
 
-        <div class="panel">
-            <h2>Детали доставки</h2>
-            <form id="order-form" onsubmit="sendOrder(event)">
-                <div class="form-group">
-                    <label>Ваше Имя</label>
-                    <input type="text" id="user-name" required placeholder="Иван Иванович">
+<script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    function renderCart() {
+        const layout = document.getElementById('cart-layout');
+        const itemsArray = Object.values(cart);
+
+        if (itemsArray.length === 0) {
+            layout.innerHTML = `
+                <div class="empty-msg">
+                    <p style="font-size: 18px; font-family: var(--title-font); margin-bottom: 15px;">В корзине пока пусто</p>
+                    <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: bold;">Заглянуть в меню</a>
                 </div>
-                <div class="form-group">
-                    <label>Номер телефона</label>
-                    <input type="tel" id="user-phone" required placeholder="+7 (999) 000-00-00">
-                </div>
-                <div class="form-group">
-                    <label>Адрес доставки</label>
-                    <textarea id="user-address" rows="3" required placeholder="Город, улица, дом, квартира"></textarea>
-                </div>
+            `;
+            return;
+        }
 
-                <div class="summary-line">
-                    <span>Итого к оплате:</span>
-                    <span id="total-price">0 ₽</span>
-                </div>
+        let itemsHTML = '<div class="cart-items">';
+        let totalSum = 0;
 
-                <button type="submit" class="submit-btn" id="checkout-submit-btn">Оформить заказ</button>
-            </form>
-        </div>
-    </div>
+        itemsArray.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            totalSum += itemTotal;
 
-    <div class="modal-overlay" id="success-modal">
-        <div class="modal">
-            <h3>Заказ принят! 🎉</h3>
-            <p>Информация передана менеджеру. Скоро мы свяжемся с вами для уточнения деталей и подтверждения доставки.</p>
-            <button onclick="closeModal()">Отлично</button>
-        </div>
-    </div>
-
-    <script>
-        const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
-        const currentDayName = daysOfWeek[new Date().getDay()];
-
-        let cart = JSON.parse(localStorage.getItem('cart')) || {};
-        let hasUnavailableItems = false;
-
-        function renderCart() {
-            const listContainer = document.getElementById('cart-list');
-            listContainer.innerHTML = '';
-            let total = 0;
-            hasUnavailableItems = false;
-
-            const items = Object.values(cart);
-
-            if (items.length === 0) {
-                listContainer.innerHTML = '<p style="color: var(--text-light); text-align:center; padding: 20px 0;">Ваша корзина пуста</p>';
-                document.getElementById('checkout-submit-btn').disabled = true;
-                document.getElementById('checkout-submit-btn').style.background = '#ccc';
-                document.getElementById('total-price').innerText = '0 ₽';
-                return;
-            }
-
-            items.forEach(item => {
-                const isAvailable = (item.day === "Все дни" || item.day === currentDayName);
-                if (!isAvailable) {
-                    hasUnavailableItems = true;
-                }
-
-                const cost = item.price * item.quantity;
-                total += cost;
-
-                listContainer.innerHTML += `
-                    <div class="cart-item">
-                        <img src="${item.image}" class="item-img">
-                        <div class="item-details">
-                            <h4 class="item-title">${item.title}</h4>
-                            <div class="item-meta">${item.price} ₽ | ${item.weight}</div>
-                            ${!isAvailable ? `<div class="availability-error">Недоступно до: ${item.day}</div>` : ''}
-                        </div>
-                        <div class="item-controls">
-                            <div class="counter">
-                                <button class="btn-c" onclick="updateQty(${item.id}, -1)">-</button>
-                                <span class="qty-lbl">${item.quantity}</span>
-                                <button class="btn-c" onclick="updateQty(${item.id}, 1)">+</button>
-                            </div>
-                            <button class="delete-btn" onclick="deleteItem(${item.id})">🗑️</button>
-                        </div>
+            itemsHTML += `
+                <div class="cart-item">
+                    <img src="${item.image}" class="item-img" alt="${item.title}">
+                    <div class="item-details">
+                        <h3 class="item-title">${item.title}</h3>
+                        <p class="item-meta">${item.weight} | ${item.quantity} шт.</p>
                     </div>
-                `;
+                    <div class="item-price-block">
+                        <span>${itemTotal} ₽</span>
+                    </div>
+                    <button class="item-del-btn" onclick="removeItem(${item.id})">🗑️</button>
+                </div>
+            `;
+        });
+        itemsHTML += '</div>';
+
+        const formHTML = `
+            <div class="order-form-block">
+                <h3 class="form-title">Данные для доставки</h3>
+                <form id="checkout-form" onsubmit="handleOrderSubmit(event)">
+                    <div class="form-group">
+                        <label for="username">Ваше имя *</label>
+                        <input type="text" id="username" required placeholder="Иван Иванов">
+                    </div>
+                    <div class="form-group">
+                        <label for="userphone">Телефон *</label>
+                        <input type="tel" id="userphone" required placeholder="+7 (999) 123-45-67">
+                    </div>
+                    <div class="form-group">
+                        <label for="useraddress">Адрес доставки *</label>
+                        <textarea id="useraddress" rows="3" required placeholder="Улица, дом, квартира, подъезд"></textarea>
+                    </div>
+                    
+                    <div class="total-row">
+                        <span>Итого к оплате:</span>
+                        <span>${totalSum} ₽</span>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="send-order-btn">Оформить заказ на дом</button>
+                </form>
+            </div>
+        `;
+
+        layout.innerHTML = itemsHTML + formHTML;
+    }
+
+    function removeItem(id) {
+        delete cart[id];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+    }
+
+    // ОТПРАВКА ЗАКАЗА НА НАШ PYTHON-БЭКЕНД
+    async function handleOrderSubmit(event) {
+        event.preventDefault();
+
+        const btn = document.getElementById('send-order-btn');
+        btn.innerText = "Оформляем заказ...";
+        btn.disabled = true;
+
+        const orderData = {
+            name: document.getElementById('username').value,
+            phone: document.getElementById('userphone').value,
+            address: document.getElementById('useraddress').value,
+            cart_items: Object.values(cart).map(item => ({
+                id: int(item.id), // Приводим к числу
+                title: item.title,
+                price: int(item.price),
+                quantity: int(item.quantity)
+            }))
+        };
+
+        try {
+            // При деплое заменим локальный адрес на адрес реального сервера
+            const response = await fetch('http://127.0.0.1:8000/api/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
             });
 
-            document.getElementById('total-price').innerText = `${total} ₽`;
-            
-            const submitBtn = document.getElementById('checkout-submit-btn');
-            if (hasUnavailableItems) {
-                submitBtn.disabled = true;
-                submitBtn.style.background = '#ccc';
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                alert('🎉 Заказ успешно принят «Ложка & Скалка»! Менеджер скоро свяжется с вами.');
+                localStorage.removeItem('cart'); // Очищаем корзину
+                window.location.href = 'index.html'; // Возвращаем на главную
             } else {
-                submitBtn.disabled = false;
-                submitBtn.style.background = 'var(--primary)';
+                throw new Error(result.detail || 'Неизвестная ошибка на сервере');
             }
+
+        } catch (error) {
+            console.error('Ошибка отправки заказа:', error);
+            alert('🛑 Ошибка при оформлении: сервер бэкенда недоступен. Пожалуйста, убедитесь, что Python запущен.');
+            btn.innerText = "Оформить заказ на дом";
+            btn.disabled = false;
         }
+    }
 
-        // Обновление количества
-        function updateQty(id, delta) {
-            if (cart[id]) {
-                cart[id].quantity += delta;
-                if (cart[id].quantity < 1) cart[id].quantity = 1;
-                localStorage.setItem('cart', JSON.stringify(cart));
-                renderCart();
-            }
-        }
+    // Для безопасного парсинга чисел
+    function int(value) {
+        return parseInt(value) || 0;
+    }
 
-        // Удаление
-        function deleteItem(id) {
-            delete cart[id];
-            localStorage.setItem('cart', JSON.stringify(cart));
-            renderCart();
-        }
-
-        // Отправка
-        async function sendOrder(event) {
-            event.preventDefault();
-            if (hasUnavailableItems) return;
-
-            const orderData = {
-                name: document.getElementById('user-name').value,
-                phone: document.getElementById('user-phone').value,
-                address: document.getElementById('user-address').value,
-                cart_items: Object.values(cart)
-            };
-
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
-                });
-
-                if (response.ok) {
-                    localStorage.removeItem('cart');
-                    cart = {};
-                    document.getElementById('success-modal').classList.add('active');
-                } else {
-                    alert('Ошибка при оформлении. Попробуйте позже.');
-                }
-            } catch (err) {
-                alert('Не удалось связаться с сервером. Проверьте Python бэкенд.');
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('success-modal').classList.remove('active');
-            renderCart();
-        }
-
-        window.onload = renderCart;
-    </script>
+    window.onload = renderCart;
+</script>
 </body>
 </html>
-
