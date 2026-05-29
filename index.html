@@ -15,16 +15,14 @@
             --border: #eedecf;
             --tag-bg: #f4ebe1;
             --error: #d9534f;
-            
             --title-font: 'Georgia', serif;
             --main-font: 'Helvetica Neue', Arial, sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* Включаем плавную прокрутку по странице */
+        html { scroll-behavior: smooth; }
 
         body {
             background-color: var(--bg);
@@ -34,10 +32,7 @@
             padding: 20px 15px;
         }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1100px; margin: 0 auto; }
 
         header {
             display: flex;
@@ -45,14 +40,10 @@
             align-items: center;
             padding: 15px 0;
             border-bottom: 2px dashed var(--border);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
-        .logo-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .logo-block { display: flex; align-items: center; gap: 12px; }
 
         .logo-img {
             width: 50px;
@@ -82,33 +73,75 @@
             transition: background 0.2s;
         }
 
-        .cart-badge-btn:hover {
-            background: var(--primary-hover);
-        }
+        .cart-badge-btn:hover { background: var(--primary-hover); }
+        .cart-count { background: white; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 14px; }
 
-        .cart-count {
-            background: white;
-            color: var(--primary);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 14px;
-        }
-
-        .section-title {
-            font-family: var(--title-font);
-            font-size: 24px;
+        /* Фиксируем панель навигации сверху при скролле, чтобы всегда была под рукой */
+        .categories-nav-wrapper {
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 100;
+            padding: 5px 0 15px 0;
             margin-bottom: 20px;
-            color: var(--text);
-            border-left: 4px solid var(--primary);
-            padding-left: 10px;
         }
 
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 50px;
+        .categories-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
+        .categories-container::-webkit-scrollbar { display: none; }
+
+        .category-btn {
+            background: var(--card-bg);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .category-btn:active { background: var(--primary); color: white; }
+        
+        .main-menu-block { margin-top: 10px; }
+        
+        .main-menu-title {
+            font-family: var(--title-font);
+            font-size: 26px;
+            margin-bottom: 25px;
+            color: var(--text);
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        /* Отступ сверху для разделов, чтобы заголовок не прятался под липкую шапку при переходе */
+        .category-section { margin-bottom: 35px; scroll-margin-top: 70px; }
+        
+        .category-title {
+            font-family: var(--title-font);
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
 
         .card {
             background: var(--card-bg);
@@ -121,10 +154,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(200, 75, 49, 0.08);
-        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(200, 75, 49, 0.08); }
 
         .card-tag {
             position: absolute;
@@ -140,31 +170,11 @@
             z-index: 2;
         }
 
-        /* Кликабельные зоны карточки делаем с указателем курсора */
-        .card-click-zone {
-            cursor: pointer;
-        }
+        .card-click-zone { cursor: pointer; }
+        .card-img { width: 100%; height: 200px; object-fit: cover; }
 
-        .card-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .card-content {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            flex-grow: 1;
-        }
-
-        .card-title {
-            font-family: var(--title-font);
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-
+        .card-content { padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        .card-title { font-family: var(--title-font); font-size: 18px; margin-bottom: 8px; }
         .card-desc {
             color: var(--text-light);
             font-size: 14px;
@@ -175,166 +185,27 @@
             overflow: hidden;
         }
 
-        .card-meta {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 15px;
-            background: var(--bg);
-            padding: 4px 8px;
-            border-radius: 6px;
-            display: inline-block;
-        }
+        .card-meta { font-size: 12px; color: var(--text-light); margin-bottom: 15px; background: var(--bg); padding: 4px 8px; border-radius: 6px; display: inline-block; }
+        .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .price { font-size: 18px; font-weight: bold; color: var(--text); }
 
-        .card-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-        }
+        .counter-group { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 4px; border-radius: 25px; border: 1px solid var(--border); }
+        .counter-btn { background: white; border: 1px solid var(--border); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+        .quantity-val { font-size: 14px; font-weight: bold; min-width: 15px; text-align: center; }
+        .add-btn { background: var(--primary); color: white; border: none; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .add-btn.added { background: var(--text-light); }
 
-        .price {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--text);
-        }
-
-        .counter-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--bg);
-            padding: 4px;
-            border-radius: 25px;
-            border: 1px solid var(--border);
-        }
-
-        .counter-btn {
-            background: white;
-            border: 1px solid var(--border);
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .quantity-val {
-            font-size: 14px;
-            font-weight: bold;
-            min-width: 15px;
-            text-align: center;
-        }
-
-        .add-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 15px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .add-btn.added {
-            background: var(--text-light);
-        }
-
-        /* КРАСИВОЕ МОДАЛЬНОЕ ОКНО ДЛЯ СМАРТФОНОВ */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(45, 38, 33, 0.6);
-            backdrop-filter: blur(4px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            padding: 15px;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-window {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 500px;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-            position: relative;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active .modal-window {
-            transform: translateY(0);
-        }
-
-        .modal-close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid var(--border);
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-
-        .modal-img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .modal-title {
-            font-family: var(--title-font);
-            font-size: 22px;
-            margin-bottom: 10px;
-            color: var(--text);
-        }
-
-        .modal-full-desc {
-            color: var(--text-light);
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            white-space: pre-line; /* Сохраняет абзацы текста из базы данных */
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
+        /* МОДАЛЬНОЕ ОКНО */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(45, 38, 33, 0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 15px; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-window { background: var(--card-bg); width: 100%; max-width: 500px; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 15px 30px rgba(0,0,0,0.15); position: relative; transform: translateY(20px); transition: transform 0.3s ease; }
+        .modal-overlay.active .modal-window { transform: translateY(0); }
+        .modal-close-btn { position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.85); border: 1px solid var(--border); width: 35px; height: 35px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .modal-img { width: 100%; height: 250px; object-fit: cover; }
+        .modal-body { padding: 20px; }
+        .modal-title { font-family: var(--title-font); font-size: 22px; margin-bottom: 10px; color: var(--text); }
+        .modal-full-desc { color: var(--text-light); font-size: 15px; line-height: 1.6; margin-bottom: 20px; white-space: pre-line; }
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -350,11 +221,15 @@
         </a>
     </header>
 
-    <h2 class="section-title" id="special-title">Сегодня в меню</h2>
-    <div class="bento-grid" id="special-menu-grid"></div>
+    <div class="categories-nav-wrapper">
+        <div class="categories-container" id="categories-bar">
+            </div>
+    </div>
 
-    <h2 class="section-title">Основное домашнее меню</h2>
-    <div class="bento-grid" id="regular-menu-grid"></div>
+    <div class="main-menu-block">
+        <h1 class="main-menu-title" id="main-menu-heading">Основное домашнее меню</h1>
+        <div id="dynamic-menu-sections"></div>
+    </div>
 </div>
 
 <div class="modal-overlay" id="product-modal" onclick="closeModal(event)">
@@ -364,11 +239,10 @@
         <div class="modal-body">
             <h3 class="modal-title" id="modal-title">Название блюда</h3>
             <div class="card-meta" id="modal-weight">Вес: 0г</div>
-            <p class="modal-full-desc" id="modal-description">Полное описание содержимого еды...</p>
-            
+            <p class="modal-full-desc" id="modal-description">Описание...</p>
             <div class="modal-footer">
                 <span class="price" id="modal-price">0 ₽</span>
-                <span style="font-size: 13px; color: var(--text-light);">Нажмите «Добавить» на карточке для заказа</span>
+                <span style="font-size: 13px; color: var(--text-light);">Добавьте товар на карточке</span>
             </div>
         </div>
     </div>
@@ -376,126 +250,154 @@
 
 <script>
     const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
-    const currentDayIndex = new Date().getDay();
-    const currentDayName = daysOfWeek[currentDayIndex];
+    const currentDayName = daysOfWeek[new Date().getDay()];
 
     let productsMock = [];
+    let activeCategories = [];
     let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    document.getElementById('main-menu-heading').innerText = `Основное домашнее меню (${currentDayName})`;
 
     async function loadMenuFromServer() {
         try {
             const response = await fetch('https://loshkaandskalka.onrender.com/api/products');
             if (!response.ok) throw new Error('Ошибка сети');
-            
             productsMock = await response.json();
-            initData();
+            
+            try {
+                const catRes = await fetch('https://aetrutsqekrydgzytgbd.supabase.co/storage/v1/object/public/dish-images/categories.txt');
+                if (catRes.ok) {
+                    const txt = await catRes.text();
+                    activeCategories = txt.split(',').map(c => c.trim()).filter(c => c.length > 0);
+                }
+            } catch (e) {
+                console.error("Ошибка чтения категорий:", e);
+                activeCategories = ["Обеды", "Выпечка", "Мясо"];
+            }
+
+            renderStructuredMenu();
         } catch (error) {
-            console.error('Не удалось загрузить меню:', error);
-            document.getElementById('special-menu-grid').innerHTML = 
-                `<p style="grid-column: 1/-1; text-align:center; color: var(--error); padding: 10px; font-weight: bold;">
-                    🛑 Не удалось загрузить меню. Проверьте статус бэкенда на Render.
-                </p>`;
+            console.error('Ошибка:', error);
+            document.getElementById('dynamic-menu-sections').innerHTML = `<p style="text-align:center; color: var(--error); padding: 20px; font-weight: bold;">🛑 Ошибка связи с сервером меню.</p>`;
         }
     }
 
-    function initData() {
-        document.getElementById('special-title').innerText = `Особое блюдо дня (${currentDayName})`;
+    // Рендерим кнопки быстрого перехода (ссылки-якоря)
+    function renderAnchorButtons(categoriesWithProducts) {
+        const bar = document.getElementById('categories-bar');
+        bar.innerHTML = ''; // Очищаем старые кнопки
         
-        const specialGrid = document.getElementById('special-menu-grid');
-        const regularGrid = document.getElementById('regular-menu-grid');
-        
-        specialGrid.innerHTML = '';
-        regularGrid.innerHTML = '';
+        categoriesWithProducts.forEach(cat => {
+            // Генерируем безопасный ID для ссылки (без пробелов)
+            const safeId = 'sec-' + cat.replace(/\s+/g, '-');
+            bar.innerHTML += `<a href="#${safeId}" class="category-btn">📍 ${cat}</a>`;
+        });
+    }
 
-        let hasSpecial = false;
+    function renderStructuredMenu() {
+        const container = document.getElementById('dynamic-menu-sections');
+        container.innerHTML = '';
 
-        productsMock.forEach(prod => {
-            const quantity = cart[prod.id] ? cart[prod.id].quantity : 1;
-            const isAdded = cart[prod.id] !== undefined;
+        const todaysProducts = productsMock.filter(prod => prod.day === currentDayName || prod.day === "Все дни");
 
-            const cardHTML = `
-                <div class="card" id="product-${prod.id}">
-                    ${prod.day !== 'Все дни' ? `<div class="card-tag">${prod.day}</div>` : ''}
-                    
-                    <div class="card-click-zone" onclick="openProductDetails(${prod.id})">
-                        <img src="${prod.image}" class="card-img" alt="${prod.title}">
-                        <div style="padding: 15px 15px 0 15px;">
-                            <h3 class="card-title">${prod.title}</h3>
-                            <p class="card-desc">${prod.description}</p>
-                            <div class="card-meta">Вес: ${prod.weight}</div>
+        if (todaysProducts.length === 0) {
+            container.innerHTML = `<p style="text-align:center; color: var(--text-light); padding: 30px;">На сегодня меню пустует.</p>`;
+            return;
+        }
+
+        let renderedCategories = [];
+
+        activeCategories.forEach(categoryName => {
+            let categoryCardsHTML = '';
+
+            todaysProducts.forEach(prod => {
+                let pureDesc = prod.description || "";
+                let itemCategories = [];
+                
+                if (pureDesc.includes("[CATS:]:")) {
+                    let parts = pureDesc.split("\n\n[CATS:]:");
+                    pureDesc = parts[0];
+                    itemCategories = parts[1].split(",").map(c => c.trim());
+                } else {
+                    itemCategories = ["Обеды"]; 
+                }
+
+                if (!itemCategories.includes(categoryName)) return;
+
+                const quantity = cart[prod.id] ? cart[prod.id].quantity : 1;
+                const isAdded = cart[prod.id] !== undefined;
+
+                categoryCardsHTML += `
+                    <div class="card" id="product-${prod.id}-${categoryName}">
+                        ${prod.day !== 'Все дни' ? `<div class="card-tag">Только в ${prod.day}</div>` : ''}
+                        <div class="card-click-zone" onclick="openProductDetails(${prod.id}, \`${pureDesc.replace(/`/g, '\\`').replace(/\n/g, '\\n')}\`)">
+                            <img src="${prod.image}" class="card-img" alt="${prod.title}">
+                            <div style="padding: 15px 15px 0 15px;">
+                                <h3 class="card-title">${prod.title}</h3>
+                                <p class="card-desc">${pureDesc}</p>
+                                <div class="card-meta">Вес: ${prod.weight}</div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="card-content" style="padding-top: 0;">
-                        <div class="card-actions">
-                            <span class="price">${prod.price} ₽</span>
-                            <div class="counter-group">
-                                <button class="counter-btn" onclick="changeQty(${prod.id}, -1)">-</button>
-                                <span class="quantity-val" id="qty-${prod.id}">${quantity}</span>
-                                <button class="counter-btn" onclick="changeQty(${prod.id}, 1)">+</button>
-                                <button class="add-btn ${isAdded ? 'added' : ''}" id="btn-${prod.id}" onclick="handleCartClick(${prod.id})">
-                                    ${isAdded ? 'Добавлено' : 'Добавить'}
-                                </button>
+                        <div class="card-content" style="padding-top: 0;">
+                            <div class="card-actions">
+                                <span class="price">${prod.price} ₽</span>
+                                <div class="counter-group">
+                                    <button class="counter-btn" onclick="changeQty(${prod.id}, -1)">-</button>
+                                    <span class="quantity-val">${quantity}</span>
+                                    <button class="counter-btn" onclick="changeQty(${prod.id}, 1)">+</button>
+                                    <button class="add-btn ${isAdded ? 'added' : ''}" onclick="handleCartClick(${prod.id})">
+                                        ${isAdded ? 'Добавлено' : 'Добавить'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            });
 
-            if (prod.day === currentDayName) {
-                specialGrid.innerHTML += cardHTML;
-                hasSpecial = true;
-            } else if (prod.day === "Все дни") {
-                regularGrid.innerHTML += cardHTML;
+            if (categoryCardsHTML.length > 0) {
+                renderedCategories.push(categoryName);
+                const safeId = 'sec-' + categoryName.replace(/\s+/g, '-');
+                
+                container.innerHTML += `
+                    <div class="category-section" id="${safeId}">
+                        <h2 class="category-title">${categoryName}</h2>
+                        <div class="bento-grid">${categoryCardsHTML}</div>
+                    </div>
+                `;
             }
         });
 
-        if(!hasSpecial) {
-            specialGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-light); padding: 10px;">На сегодня особых блюд дня нет, но основное меню всегда открыто!</p>`;
-        }
+        // Строим панель навигации только из тех категорий, в которых реально есть блюда на сегодня
+        renderAnchorButtons(renderedCategories);
         updateCartHeader();
     }
 
-    // ЛОГИКА ОКНА ПОДРОБНОСТЕЙ
-    function openProductDetails(id) {
+    function openProductDetails(id, pureDescription) {
         const product = productsMock.find(p => p.id === id);
         if (!product) return;
-
-        // Наполняем модальное окно данными выбранного блюда
         document.getElementById('modal-image').src = product.image;
-        document.getElementById('modal-image').alt = product.title;
         document.getElementById('modal-title').innerText = product.title;
         document.getElementById('modal-weight').innerText = `Вес: ${product.weight}`;
-        document.getElementById('modal-description').innerText = product.description;
+        document.getElementById('modal-description').innerText = pureDescription;
         document.getElementById('modal-price').innerText = `${product.price} ₽`;
-
-        // Открываем окно
         toggleModal(true);
     }
 
     function toggleModal(isOpen) {
         const modal = document.getElementById('product-modal');
-        if (isOpen) {
-            modal.classList.add('active');
-        } else {
-            modal.classList.remove('active');
-        }
+        if (isOpen) modal.classList.add('active');
+        else modal.classList.remove('active');
     }
 
-    // Закрытие при клике на темную область вокруг окна
-    function closeModal(event) {
-        if (event.target.id === 'product-modal') {
-            toggleModal(false);
-        }
-    }
+    function closeModal(event) { if (event.target.id === 'product-modal') toggleModal(false); }
 
     function changeQty(id, delta) {
-        const qtyElement = document.getElementById(`qty-${id}`);
-        let currentQty = parseInt(qtyElement.innerText);
-        currentQty += delta;
+        const displays = document.querySelectorAll(`[id^="product-${id}"] .quantity-val`);
+        if(displays.length === 0) return;
+        let currentQty = parseInt(displays[0].innerText) + delta;
         if (currentQty < 1) currentQty = 1;
-        qtyElement.innerText = currentQty;
-
+        displays.forEach(el => el.innerText = currentQty);
         if (cart[id]) {
             cart[id].quantity = currentQty;
             localStorage.setItem('cart', JSON.stringify(cart));
@@ -504,26 +406,17 @@
     }
 
     function handleCartClick(id) {
-        const btn = document.getElementById(`btn-${id}`);
-        const qty = parseInt(document.getElementById(`qty-${id}`).innerText);
+        const buttons = document.querySelectorAll(`[id^="product-${id}"] .add-btn`);
+        const displays = document.querySelectorAll(`[id^="product-${id}"] .quantity-val`);
+        const qty = displays.length > 0 ? parseInt(displays[0].innerText) : 1;
         const product = productsMock.find(p => p.id === id);
 
         if (cart[id]) {
             delete cart[id];
-            btn.innerText = "Добавить";
-            btn.classList.remove('added');
+            buttons.forEach(btn => { btn.innerText = "Добавить"; btn.classList.remove('added'); });
         } else {
-            cart[id] = {
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                weight: product.weight,
-                day: product.day,
-                image: product.image,
-                quantity: qty
-            };
-            btn.innerText = "Добавлено";
-            btn.classList.add('added');
+            cart[id] = { id: product.id, title: product.title, price: product.price, weight: product.weight, day: product.day, image: product.image, quantity: qty };
+            buttons.forEach(btn => { btn.innerText = "Добавлено"; btn.classList.add('added'); });
         }
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartHeader();
