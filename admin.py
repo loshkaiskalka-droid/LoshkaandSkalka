@@ -19,18 +19,21 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Точное имя бакета из вашей панели управления Supabase
+BUCKET_NAME = "food-images"
+
 # Функция для загрузки динамических категорий из Supabase Storage
 def load_categories():
     default_cats = ["Обеды", "Выпечка", "Мясо"]
     try:
-        res = supabase.storage.from_("dish-images").download("categories.txt")
+        res = supabase.storage.from_(BUCKET_NAME).download("categories.txt")
         if res:
             cats = res.decode("utf-8").split(",")
             return [c.strip() for c in cats if c.strip()]
     except Exception:
         try:
             cats_str = ",".join(default_cats)
-            supabase.storage.from_("dish-images").upload("categories.txt", cats_str.encode("utf-8"), {"content-type": "text/plain"})
+            supabase.storage.from_(BUCKET_NAME).upload("categories.txt", cats_str.encode("utf-8"), {"content-type": "text/plain"})
         except Exception:
             pass
     return default_cats
@@ -40,10 +43,10 @@ def save_categories(cats_list):
     try:
         cats_str = ",".join(cats_list)
         try:
-            supabase.storage.from_("dish-images").remove(["categories.txt"])
+            supabase.storage.from_(BUCKET_NAME).remove(["categories.txt"])
         except Exception:
             pass
-        supabase.storage.from_("dish-images").upload("categories.txt", cats_str.encode("utf-8"), {"content-type": "text/plain"})
+        supabase.storage.from_(BUCKET_NAME).upload("categories.txt", cats_str.encode("utf-8"), {"content-type": "text/plain"})
         return True
     except Exception as e:
         st.error(f"Не удалось сохранить категории: {e}")
@@ -57,7 +60,6 @@ tab1, tab2 = st.tabs(["📥 Новые заказы", "📜 Управление
 with tab1:
     st.subheader("Лента активных заказов")
     try:
-        # Исправлено: в Supabase Python SDK правильный синтаксис сортировки: .order("id", desc=True)
         response = supabase.table("orders").select("*").eq("status", "new").order("id", desc=True).execute()
         orders = response.data
 
@@ -125,16 +127,18 @@ with tab2:
             new_desc = st.text_area("Описание / Состав / Содержимое еды *")
             new_price = st.number_input("Цена (₽) *", min_value=0, step=10, value=300)
             new_weight = st.text_input("Вес (например, '250 г') *", value="250 г")
-            new_day = st.selectbox("День доступности блюда *", options=days_list, index=0)
+            
+            # ИЗМЕНЕНО: Замена selectbox на multiselect для выбора нескольких дней недели
+            new_days = st.multiselect("Дни доступности блюда *", options=days_list, default=["Все дни"])
+            
             new_cats = st.multiselect("Категории блюда (Выбор нескольких) *", options=categories_list)
             uploaded_file = st.file_uploader("Фотография блюда *", type=["jpg", "jpeg", "png"])
             
-            # Исправлено: стандартный правильный метод Streamlit для кнопки отправки формы
             submit_add = st.form_submit_button("Добавить в базу")
             
             if submit_add:
-                if not new_title or not new_desc or not uploaded_file or not new_cats:
-                    st.error("Пожалуйста, заполните обязательные поля и добавьте фото!")
+                if not new_title or not new_desc or not uploaded_file or not new_cats or not new_days:
+                    st.error("Пожалуйста, заполните обязательные поля, выберите дни и добавьте фото!")
                 else:
                     try:
                         file_extension = uploaded_file.name.split(".")[-1]
@@ -142,18 +146,24 @@ with tab2:
                         storage_path = f"menu/{clean_title}_{int(new_price)}.{file_extension}"
                         
                         file_data = uploaded_file.read()
-                        supabase.storage.from_("dish-images").upload(storage_path, file_data, {"content-type": f"image/{file_extension}"})
-                        img_url = supabase.storage.from_("dish-images").get_public_url(storage_path)
+                        supabase.storage.from_(BUCKET_NAME).upload(storage_path, file_data, {"content-type": f"image/{file_extension}"})
+                        img_url = supabase.storage.from_(BUCKET_NAME).get_public_url(storage_path)
                         
                         cats_string = ", ".join(new_cats)
                         full_description_field = f"{new_desc}\n\n[CATS:]: {cats_string}"
+                        
+                        # Если выбрано "Все дни" вместе с другими днями, оставляем только "Все дни" для чистоты структуры
+                        if "Все дни" in new_days and len(new_days) > 1:
+                            days_string = "Все дни"
+                        else:
+                            days_string = ", ".join(new_days)
                         
                         supabase.table("products").insert({
                             "title": new_title,
                             "description": full_description_field,
                             "price": int(new_price),
                             "weight": new_weight,
-                            "day": new_day,
+                            "day": days_string,
                             "image": img_url
                         }).execute()
                         
@@ -188,8 +198,14 @@ with tab2:
                 edit_price = st.number_input("Изменить цену (₽)", min_value=0, value=int(chosen_prod["price"]))
                 edit_weight = st.text_input("Изменить вес", value=chosen_prod["weight"])
                 
-                default_day_idx = days_list.index(chosen_prod["day"]) if chosen_prod["day"] in days_list else 0
-                edit_day = st.selectbox("Изменить день доступности", options=days_list, index=default_day_idx)
+                # Парсим уже сохраненные дни из базы данных для отображения по умолчанию
+                saved_days = [d.strip() for d in (chosen_prod.get("day") or "Все дни").split(",")]
+                valid_saved_days = [d for d in saved_days if d in days_list]
+                if not valid_saved_days:
+                    valid_saved_days = ["Все дни"]
+                
+                # ИЗМЕНЕНО: Замена selectbox на multiselect в редакторе блюда
+                edit_days = st.multiselect("Изменить дни доступности", options=days_list, default=valid_saved_days)
                 edit_cats = st.multiselect("Изменить категории", options=categories_list, default=[c for c in extracted_cats if c in categories_list])
                 
                 col_btn1, col_btn2 = st.columns(2)
@@ -198,12 +214,17 @@ with tab2:
                         updated_cats_str = ", ".join(edit_cats)
                         updated_full_desc = f"{edit_desc}\n\n[CATS:]: {updated_cats_str}"
                         
+                        if "Все дни" in edit_days and len(edit_days) > 1:
+                            updated_days_str = "Все дни"
+                        else:
+                            updated_days_str = ", ".join(edit_days)
+                        
                         supabase.table("products").update({
                             "title": edit_title,
                             "description": updated_full_desc,
                             "price": int(edit_price),
                             "weight": edit_weight,
-                            "day": edit_day
+                            "day": updated_days_str
                         }).eq("id", chosen_prod["id"]).execute()
                         st.success("Данные обновлены!")
                         st.rerun()
