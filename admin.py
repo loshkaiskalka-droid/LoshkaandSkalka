@@ -57,6 +57,7 @@ tab1, tab2 = st.tabs(["📥 Новые заказы", "📜 Управление
 with tab1:
     st.subheader("Лента активных заказов")
     try:
+        # Исправлено: в Supabase Python SDK правильный синтаксис сортировки: .order("id", desc=True)
         response = supabase.table("orders").select("*").eq("status", "new").order("id", desc=True).execute()
         orders = response.data
 
@@ -92,7 +93,7 @@ with tab2:
     st.markdown("### 🗂️ Управление категориями")
     st.write(f"**Текущие разделы на сайте:** {', '.join(categories_list)}")
     
-    with st.expander("➕ Добавить или 🗑️ Удалить раздел (нажми, чтобы открыть)"):
+    with st.expander("➕ Добавить или 🗑️ Удалить раздел"):
         cat_col1, cat_col2 = st.columns(2)
         with cat_col1:
             new_cat_name = st.text_input("Название новой категории", key="new_cat_input")
@@ -126,9 +127,10 @@ with tab2:
             new_weight = st.text_input("Вес (например, '250 г') *", value="250 г")
             new_day = st.selectbox("День доступности блюда *", options=days_list, index=0)
             new_cats = st.multiselect("Категории блюда (Выбор нескольких) *", options=categories_list)
-            uploaded_file = st.file_uploader("Фотография блюда (из галереи) *", type=["jpg", "jpeg", "png"])
+            uploaded_file = st.file_uploader("Фотография блюда *", type=["jpg", "jpeg", "png"])
             
-            submit_add = st.form_submit_with_submit_button("Добавить в базу")
+            # Исправлено: стандартный правильный метод Streamlit для кнопки отправки формы
+            submit_add = st.form_submit_button("Добавить в базу")
             
             if submit_add:
                 if not new_title or not new_desc or not uploaded_file or not new_cats:
@@ -163,7 +165,7 @@ with tab2:
     with col2:
         st.markdown("### ✏️ Редактировать / Удалить блюдо")
         try:
-            prod_resp = supabase.table("products").select("*").order("id", desc=False).execute()
+            prod_resp = supabase.table("products").select("*").order("id").execute()
             products = prod_resp.data
             
             if products:
